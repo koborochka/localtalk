@@ -1,11 +1,19 @@
+import { Route } from "react-router-dom"
+import { Routes } from "react-router-dom"
+import { Header } from "../shared/ui/header/Header"
+import { Authorize } from "../pages/Authorize/Authorize"
+import { ChatRoom } from "../pages/ChatRoom/ChatRoom"
+
 
 function App() {
 
   return (
     <>
-      <p className="text-cyan-700">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header />
+      <Routes>
+        <Route path="/auth" element={<Authorize />} />
+        <Route path="/chat" element={<ChatRoom />} />
+      </Routes>
     </>
   )
 }
