@@ -22,7 +22,8 @@
         "@features/*": ["features/*"],
         "@shared/*": ["shared/*"],
         "@pages/*": ["pages/*"],
-        "@widgets/*": ["widgets/*"]
+        "@widgets/*": ["widgets/*"],
+        "@utils/*": ["utils/*"],
     },
 
     /* Linting */
