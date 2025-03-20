@@ -6,6 +6,16 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    "baseUrl": "src",
+    "paths": {
+        "@app/*": ["app/*"],
+        "@entities/*": ["entities/*"],
+        "@features/*": ["features/*"],
+        "@shared/*": ["shared/*"],
+        "@pages/*": ["pages/*"],
+        "@widgets/*": ["widgets/*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

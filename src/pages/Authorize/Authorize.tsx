@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "../../shared/store/userStore";
-import { useChatStore } from "../../shared/store/chatStore";
+import { useUserStore } from "@shared/store/userStore";
+import { useChatStore } from "@shared/store/chatStore";
 
 
 export const Authorize = () => {
