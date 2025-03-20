@@ -3,26 +3,46 @@ import { User } from "../../app/types/User";
 
 type UserStore = {
 	users: User[];
-	currentUser: User | null;
+	currentUserId: string | null;
 	setUser: (name: string) => void;
 };
 
-export const useUserStore = create<UserStore>((set) => ({
-	users: JSON.parse(localStorage.getItem("users") || "[]"),
-	currentUser: null,
+const channel = new BroadcastChannel("user_channel"); 
 
-	setUser: (name) => {
-		set((state) => {
-			let users = [...state.users];
-			let user = users.find((u) => u.name === name);
+export const useUserStore = create<UserStore>((set) => {
 
-			if (!user) {
-				user = { id: crypto.randomUUID(), name };
-				users.push(user);
-			}
-            
-            localStorage.setItem("users", JSON.stringify(users));
-			return { currentUser: user };
-		});
-	},
-}));
+    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]")
+    const storedUserId = sessionStorage.getItem("currentUserId") || ""
+
+    channel.onmessage = (event) => {
+		if (event.data.type === "UPDATE_USERS") {
+			set({ users: event.data.users });
+		}
+    }
+
+    return {
+        users: storedUsers,
+        currentUserId: storedUserId,
+
+        setUser: (name) => {
+            set((state) => {
+                let users = [...state.users];
+                let user = users.find((u) => u.name === name);
+
+                if (!user) {
+                    user = { id: crypto.randomUUID(), name };
+                    users.push(user);
+
+                    localStorage.setItem("users", JSON.stringify(users));
+                    channel.postMessage({
+                        type: "UPDATE_USERS",
+                        users
+                    });
+                }
+
+                sessionStorage.setItem("currentUserId", user.id);
+                return { users, currentUserId: user.id };
+            });
+        },
+    }
+});
