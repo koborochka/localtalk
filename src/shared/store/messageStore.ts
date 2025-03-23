@@ -4,7 +4,12 @@ import { create } from "zustand";
 
 const channel = new BroadcastChannel("chat_channel");
 type MessageStore = {
-	sendMessage: (chatId: string, userId: string, text: string, media?: string) => void;
+	sendMessage: (
+		chatId: string,
+		userId: string,
+		text: string,
+		media?: string
+	) => void;
 	editMessage: (chatId: string, messageId: string, newText: string) => void;
 	deleteMessage: (chatId: string, messageId: string) => void;
 	addReaction: (
@@ -17,39 +22,29 @@ type MessageStore = {
 
 export const useMessageStore = create<MessageStore>((set) => {
 	return {
-		sendMessage: (chatId, userId, text, media?) => {
-			set(() => {
-				const chatStore = useChatStore.getState();
-				const chats = chatStore.chats.map((chat) => {
-					if (chat.id === chatId) {
-						const newMessage: Message = {
-							id: crypto.randomUUID(),
-							chatId,
-							userId,
-							text,
-                            media: media,
-							date: new Date().toISOString(),
-							edited: false,
-							reactions: {},
-						};
-						return {
-							...chat,
-							messages: [...chat.messages, newMessage],
-						};
-					}
-					return chat;
-				});
+		sendMessage: async (chatId, userId, text, media?) => {
+			const chatStore = useChatStore.getState();
+			const chat = chatStore.chats.find((chat) => chat.id === chatId);
 
-				const updatedChat = chats.find((chat) => chat.id === chatId);
-				if (updatedChat) {
-					channel.postMessage({
-						type: "UPDATE_CHAT",
-						chatId,
-						messages: updatedChat.messages,
-					});
-				}
+			if (!chat) return;
 
-				return {};
+			const newMessage: Message = {
+				id: crypto.randomUUID(),
+				chatId,
+				userId,
+				text,
+				media: media,
+				date: new Date().toISOString(),
+				edited: false,
+				reactions: {},
+			};
+
+			const updatedMessages = [...chat.messages, newMessage];
+
+			channel.postMessage({
+				type: "UPDATE_CHAT",
+				chatId,
+				messages: updatedMessages,
 			});
 		},
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { User } from "../../app/types/User";
+import { db } from "@shared/lib/db/indexedDB";
 
 type UserStore = {
 	users: User[];
@@ -10,8 +11,8 @@ type UserStore = {
 const channel = new BroadcastChannel("user_channel"); 
 
 export const useUserStore = create<UserStore>((set) => {
+    db.getAllUsers().then((users) => set({users}))
 
-    const storedUsers = JSON.parse(localStorage.getItem("users") || "[]")
     const storedUserId = sessionStorage.getItem("currentUserId") || ""
 
     channel.onmessage = (event) => {
@@ -21,7 +22,7 @@ export const useUserStore = create<UserStore>((set) => {
     }
 
     return {
-        users: storedUsers,
+        users: [],
         currentUserId: storedUserId,
 
         setUser: (name) => {
@@ -33,7 +34,7 @@ export const useUserStore = create<UserStore>((set) => {
                     user = { id: crypto.randomUUID(), name };
                     users.push(user);
 
-                    localStorage.setItem("users", JSON.stringify(users));
+                    db.addUser(user)
                     channel.postMessage({
                         type: "UPDATE_USERS",
                         users

@@ -1,5 +1,5 @@
 import { useUserStore } from "@shared/store/userStore";
-import { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useChatStore } from "@shared/store/chatStore";
 import { useMessageStore } from "@shared/store/messageStore";
 import { Chat } from "@app/types/Chat";
@@ -10,7 +10,9 @@ import { groupMessages } from "@utils/groupMessages";
 import { useTypingStore } from "@shared/store/typingStore";
 
 
-export const ChatRoom = () => {
+export const ChatRoom = React.memo(() => {
+    console.log('render');
+    
     const currentUserId = useUserStore((state) => state.currentUserId);
     const currentChatId = useChatStore((state) => state.currentChatId);
     const chats = useChatStore((state) => state.chats);
@@ -32,14 +34,21 @@ export const ChatRoom = () => {
         .filter((user) => typingUsersId?.includes(user.id) && user.id !== currentUser.id)
         .map((user) => user.name);
 
-    const handleSend = () => {
+    useEffect(() => {
+        if (mediaMessage) {
+            handleMessageSend();
+        }
+    }, [mediaMessage]);
+
+    const handleMessageSend = useCallback(() => {
         if ((message.trim() || mediaMessage.trim()) && currentChat.id && currentUser.id) {
             sendMessage(currentChat.id, currentUser.id, message, mediaMessage);
             setTyping(currentChat.id, currentUser.id, false);
-            setMessage("");
             setMediaMessage("");
+            setMessage("");   
         }
-    };
+    }, [message, mediaMessage, currentChat.id, currentUser.id, sendMessage, setTyping]);
+
 
     const handleAttachClick = () => {
         if (fileInputRef.current) {
@@ -55,24 +64,29 @@ export const ChatRoom = () => {
         reader.onloadend = () => {
             const base64String = reader.result as string;
             setMediaMessage(base64String)
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         };
         reader.readAsDataURL(file);
     };
 
-    const handleTyping = (value: string) => {
-        setMessage(value)
+    const handleTyping = useCallback((value: string) => {
+        setMessage(value);
         setTyping(currentChat.id, currentUser.id, true);
 
         if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current)
+            clearTimeout(typingTimeoutRef.current);
         }
 
         typingTimeoutRef.current = setTimeout(() => {
-            setTyping(currentChat.id, currentUser.id, false)
-            typingTimeoutRef.current = null
+            setTyping(currentChat.id, currentUser.id, false);
         }, 3000);
-    };
+    }, [currentChat.id, currentUser.id, setTyping]);
 
+    if (!chats.length || !users.length || !currentChatId || !currentUserId) {
+        return <p className="text-center text-5xl mt-60 text-[#636567]">Loading...</p>;
+    }
 
     const groupedMessages = groupMessages(currentChat, currentUser, users)
 
@@ -135,15 +149,12 @@ export const ChatRoom = () => {
                 <MessageInput
                     value={message}
                     onChange={handleTyping}
-                    onSend={handleSend}
+                    onSend={handleMessageSend}
                     autoFocus={true}
                     placeholder="Type message here..."
                     onAttachClick={handleAttachClick}
                 />
             </ChatContainer>
-            {mediaMessage && (
-                <img src={mediaMessage} alt="attachment-icon" height={200} />
-            )}
         </MainContainer>
     );
-};
+});
