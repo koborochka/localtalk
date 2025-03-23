@@ -96,8 +96,11 @@ export const ChatRoom = React.memo(() => {
     };
 
     if (!chats.length || !users.length || !currentChatId || !currentUserId) {
-        return <p className="text-center text-5xl mt-60 text-[#636567]">Loading...</p>;
-    }
+        return (
+            <div className="flex items-center justify-center h-[92vh]">
+                <p className="text-center text-5xl text-[#636567]">Loading...</p>
+            </div>
+        );    }
 
     const groupedMessages = groupMessages(currentChat, currentUser, users)
 
@@ -117,8 +120,8 @@ export const ChatRoom = React.memo(() => {
             )}
 
             <MainContainer style={{
-                height: '650px',
-                maxWidth: '1200px',
+                height: '92vh',
+                maxWidth: '80vw',
                 margin: '0 auto'
             }}>
                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
@@ -158,8 +161,8 @@ export const ChatRoom = React.memo(() => {
                                                 <Message.ImageContent
                                                     src={msg.media}
                                                     alt="sent-img"
-                                                    width={400}
                                                     className="cursor-pointer"
+                                                    width={400}
                                                 />
                                             ) : null}
                                         </Message>

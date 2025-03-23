@@ -7,13 +7,13 @@ import { ChatRoom } from "@pages/ChatRoom/ChatRoom"
 function App() {
 
     return (
-        <>
+        <div className="bg-gray-50">
             <Header />
             <Routes>
                 <Route path="/auth" element={<Authorize />} />
                 <Route path="/chat" element={<ChatRoom />} />
             </Routes>
-        </>
+        </div>
     )
 }
 

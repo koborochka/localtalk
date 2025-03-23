@@ -23,11 +23,6 @@ type MessageStore = {
 export const useMessageStore = create<MessageStore>((set) => {
 	return {
 		sendMessage: async (chatId, userId, text, media?) => {
-			const chatStore = useChatStore.getState();
-			const chat = chatStore.chats.find((chat) => chat.id === chatId);
-
-			if (!chat) return;
-
 			const newMessage: Message = {
 				id: crypto.randomUUID(),
 				chatId,
@@ -39,12 +34,10 @@ export const useMessageStore = create<MessageStore>((set) => {
 				reactions: {},
 			};
 
-			const updatedMessages = [...chat.messages, newMessage];
-
 			channel.postMessage({
-				type: "UPDATE_CHAT",
+				type: "ADD_MESSAGE",
 				chatId,
-				messages: updatedMessages,
+				message: newMessage,
 			});
 		},
 

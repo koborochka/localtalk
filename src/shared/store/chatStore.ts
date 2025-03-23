@@ -8,7 +8,7 @@ const channel = new BroadcastChannel("chat_channel");
 type ChatStore = {
 	chats: Chat[];
 	currentChatId: string | null;
-        
+
 	setChat: (name: string) => void;
 };
 
@@ -21,12 +21,12 @@ export const useChatStore = create<ChatStore>((set) => {
 		if (event.data.type === "UPDATE_CHATS") {
 			set({ chats: event.data.chats });
 		}
-		if (event.data.type === "UPDATE_CHAT" && event.data.chatId) {
-			db.updateChatMessages(event.data.chatId, event.data.messages);
+        if (event.data.type === "ADD_MESSAGE" && event.data.chatId) {
+			db.addMessageToChat(event.data.chatId, event.data.message);
 			set((state) => {
 				const updatedChats = state.chats.map((chat) =>
 					chat.id === event.data.chatId
-						? { ...chat, messages: event.data.messages }
+						? { ...chat, messages: [...chat.messages, event.data.message] }
 						: chat
 				);
 				return { chats: updatedChats };
