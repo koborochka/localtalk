@@ -21,29 +21,49 @@ export const ChatRoom = () => {
 
     const sendMessage = useMessageStore((state) => state.sendMessage);
     const [message, setMessage] = useState("");
+    const [mediaMessage, setMediaMessage] = useState("");
 
     const typingUsersId = useTypingStore((state) => state.typingUsers[currentChat.id]);
     const setTyping = useTypingStore((state) => state.setTyping);
 
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
     const typingUsers = users
         .filter((user) => typingUsersId?.includes(user.id) && user.id !== currentUser.id)
         .map((user) => user.name);
 
     const handleSend = () => {
-        if (message.trim() && currentChat.id && currentUser.id) {
-            sendMessage(currentChat.id, currentUser.id, message);
+        if ((message.trim() || mediaMessage.trim()) && currentChat.id && currentUser.id) {
+            sendMessage(currentChat.id, currentUser.id, message, mediaMessage);
             setTyping(currentChat.id, currentUser.id, false);
             setMessage("");
+            setMediaMessage("");
         }
+    };
+
+    const handleAttachClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result as string;
+            setMediaMessage(base64String)
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleTyping = (value: string) => {
         setMessage(value)
         setTyping(currentChat.id, currentUser.id, true);
 
-        if (typingTimeoutRef.current){
+        if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current)
         }
 
@@ -52,7 +72,7 @@ export const ChatRoom = () => {
             typingTimeoutRef.current = null
         }, 3000);
     };
-    
+
 
     const groupedMessages = groupMessages(currentChat, currentUser, users)
 
@@ -62,6 +82,7 @@ export const ChatRoom = () => {
             maxWidth: '1200px',
             margin: '0 auto'
         }}>
+            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
             <ChatContainer>
                 <ConversationHeader>
                     <ConversationHeader.Content
@@ -92,8 +113,17 @@ export const ChatRoom = () => {
                                             direction: group.direction,
                                             position: 'normal'
                                         }}
+                                    >
 
-                                    />
+                                        {msg.media ? (
+                                            <Message.ImageContent
+                                                src={msg.media}
+                                                alt="sent-img"
+                                                width={400}
+                                            />
+
+                                        ) : null}
+                                    </Message>
                                 ))}
                             </MessageGroup.Messages>
                             <MessageGroup.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}>{formatTime(group.messages[group.messages.length - 1].date)}</MessageGroup.Footer>
@@ -108,8 +138,12 @@ export const ChatRoom = () => {
                     onSend={handleSend}
                     autoFocus={true}
                     placeholder="Type message here..."
+                    onAttachClick={handleAttachClick}
                 />
             </ChatContainer>
+            {mediaMessage && (
+                <img src={mediaMessage} alt="attachment-icon" height={200} />
+            )}
         </MainContainer>
     );
 };

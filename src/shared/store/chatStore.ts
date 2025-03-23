@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { Chat } from "../../app/types/Chat"; 
-import { Message } from "../../app/types/Message";
+import { Chat } from "@app/types/Chat"; 
+import { Message } from "@app/types/Message";
 
 const channel = new BroadcastChannel("chat_channel"); 
 
@@ -61,7 +61,6 @@ export const useChatStore = create<ChatStore>((set) => {
                 sessionStorage.setItem("currentChatId", chat.id); 
 
 				return { chats, currentChatId: chat.id };
-                
 			});
 		},
 	};

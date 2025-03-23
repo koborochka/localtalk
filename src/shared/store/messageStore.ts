@@ -4,7 +4,7 @@ import { create } from "zustand";
 
 const channel = new BroadcastChannel("chat_channel");
 type MessageStore = {
-	sendMessage: (chatId: string, userId: string, text: string) => void;
+	sendMessage: (chatId: string, userId: string, text: string, media?: string) => void;
 	editMessage: (chatId: string, messageId: string, newText: string) => void;
 	deleteMessage: (chatId: string, messageId: string) => void;
 	addReaction: (
@@ -17,7 +17,7 @@ type MessageStore = {
 
 export const useMessageStore = create<MessageStore>((set) => {
 	return {
-		sendMessage: (chatId, userId, text) => {
+		sendMessage: (chatId, userId, text, media?) => {
 			set(() => {
 				const chatStore = useChatStore.getState();
 				const chats = chatStore.chats.map((chat) => {
@@ -27,6 +27,7 @@ export const useMessageStore = create<MessageStore>((set) => {
 							chatId,
 							userId,
 							text,
+                            media: media,
 							date: new Date().toISOString(),
 							edited: false,
 							reactions: {},
