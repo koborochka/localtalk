@@ -11,8 +11,6 @@ import { useTypingStore } from "@shared/store/typingStore";
 
 
 export const ChatRoom = React.memo(() => {
-    console.log('render');
-    
     const currentUserId = useUserStore((state) => state.currentUserId);
     const currentChatId = useChatStore((state) => state.currentChatId);
     const chats = useChatStore((state) => state.chats);
@@ -25,11 +23,14 @@ export const ChatRoom = React.memo(() => {
     const [message, setMessage] = useState("");
     const [mediaMessage, setMediaMessage] = useState("");
 
+    const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
+
     const typingUsersId = useTypingStore((state) => state.typingUsers[currentChat.id]);
     const setTyping = useTypingStore((state) => state.setTyping);
 
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const fileInputRef = useRef<HTMLInputElement | null>(null)
+
     const typingUsers = users
         .filter((user) => typingUsersId?.includes(user.id) && user.id !== currentUser.id)
         .map((user) => user.name);
@@ -45,7 +46,7 @@ export const ChatRoom = React.memo(() => {
             sendMessage(currentChat.id, currentUser.id, message, mediaMessage);
             setTyping(currentChat.id, currentUser.id, false);
             setMediaMessage("");
-            setMessage("");   
+            setMessage("");
         }
     }, [message, mediaMessage, currentChat.id, currentUser.id, sendMessage, setTyping]);
 
@@ -84,6 +85,16 @@ export const ChatRoom = React.memo(() => {
         }, 3000);
     }, [currentChat.id, currentUser.id, setTyping]);
 
+    const openFullScreenImage = (src: string | undefined) => {
+        if (src) {
+            setFullScreenImage(src);
+        }
+    };
+
+    const closeFullScreenImage = () => {
+        setFullScreenImage(null);
+    };
+
     if (!chats.length || !users.length || !currentChatId || !currentUserId) {
         return <p className="text-center text-5xl mt-60 text-[#636567]">Loading...</p>;
     }
@@ -91,70 +102,85 @@ export const ChatRoom = React.memo(() => {
     const groupedMessages = groupMessages(currentChat, currentUser, users)
 
     return (
-        <MainContainer style={{
-            height: '650px',
-            maxWidth: '1200px',
-            margin: '0 auto'
-        }}>
-            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-            <ChatContainer>
-                <ConversationHeader>
-                    <ConversationHeader.Content
-                        info={`room: ${currentChat.name}`}
-                        className="text-3xl text-center"
+        <>
+            {fullScreenImage && (
+                <div
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+                    onClick={closeFullScreenImage}
+                >
+                    <img
+                        src={fullScreenImage}
+                        alt="fullscreen-img"
+                        className="max-w-full max-h-full"
                     />
-                    <ConversationHeader.Actions>
-                        <InfoButton title="Show info" />
-                    </ConversationHeader.Actions>
-                </ConversationHeader>
+                </div>
+            )}
 
-                <MessageList typingIndicator={typingUsers.length > 0
-                    ? <TypingIndicator content={`${typingUsers.join(", ")} печатает...`} />
-                    : null} >
+            <MainContainer style={{
+                height: '650px',
+                maxWidth: '1200px',
+                margin: '0 auto'
+            }}>
+                <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                <ChatContainer>
+                    <ConversationHeader>
+                        <ConversationHeader.Content
+                            info={`room: ${currentChat.name}`}
+                            className="text-3xl text-center"
+                        />
+                        <ConversationHeader.Actions>
+                            <InfoButton title="Show info" />
+                        </ConversationHeader.Actions>
+                    </ConversationHeader>
 
-                    {groupedMessages.map((group, index) => (
-                        <MessageGroup key={index} direction={group.direction} sender={group.senderName} sentTime={group.messages[0].date}>
-                            {group.direction == 'incoming' ?
-                                <MessageGroup.Header>{group.senderName}</MessageGroup.Header>
-                                : ''
-                            }
-                            <MessageGroup.Messages >
-                                {group.messages.map((msg) => (
-                                    <Message
-                                        key={msg.id}
-                                        model={{
-                                            message: msg.text,
-                                            direction: group.direction,
-                                            position: 'normal'
-                                        }}
-                                    >
+                    <MessageList typingIndicator={typingUsers.length > 0
+                        ? <TypingIndicator content={`${typingUsers.join(", ")} печатает...`} />
+                        : null} >
 
-                                        {msg.media ? (
-                                            <Message.ImageContent
-                                                src={msg.media}
-                                                alt="sent-img"
-                                                width={400}
-                                            />
+                        {groupedMessages.map((group, index) => (
+                            <MessageGroup key={index} direction={group.direction} sender={group.senderName} sentTime={group.messages[0].date}>
+                                {group.direction == 'incoming' ?
+                                    <MessageGroup.Header>{group.senderName}</MessageGroup.Header>
+                                    : ''
+                                }
+                                <MessageGroup.Messages >
+                                    {group.messages.map((msg) => (
+                                        <Message
+                                            key={msg.id}
+                                            model={{
+                                                message: msg.text,
+                                                direction: group.direction,
+                                                position: 'normal'
+                                            }}
+                                            onDoubleClick={() => openFullScreenImage(msg.media)}
+                                        >
+                                            {msg.media ? (
+                                                <Message.ImageContent
+                                                    src={msg.media}
+                                                    alt="sent-img"
+                                                    width={400}
+                                                    className="cursor-pointer"
+                                                />
+                                            ) : null}
+                                        </Message>
+                                    ))}
+                                </MessageGroup.Messages>
+                                <MessageGroup.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}>{formatTime(group.messages[group.messages.length - 1].date)}</MessageGroup.Footer>
+                            </MessageGroup>
+                        ))}
 
-                                        ) : null}
-                                    </Message>
-                                ))}
-                            </MessageGroup.Messages>
-                            <MessageGroup.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}>{formatTime(group.messages[group.messages.length - 1].date)}</MessageGroup.Footer>
-                        </MessageGroup>
-                    ))}
+                    </MessageList>
 
-                </MessageList>
-
-                <MessageInput
-                    value={message}
-                    onChange={handleTyping}
-                    onSend={handleMessageSend}
-                    autoFocus={true}
-                    placeholder="Type message here..."
-                    onAttachClick={handleAttachClick}
-                />
-            </ChatContainer>
-        </MainContainer>
+                    <MessageInput
+                        value={message}
+                        onChange={handleTyping}
+                        onSend={handleMessageSend}
+                        autoFocus={true}
+                        placeholder="Type message here..."
+                        onAttachClick={handleAttachClick}
+                    />
+                </ChatContainer>
+            </MainContainer>
+        </>
     );
 });
