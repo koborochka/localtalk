@@ -39,6 +39,9 @@ export const db = {
 			return;
 		}
 
+        const messageExists = chat.messages.some((msg: Message) => msg.id === message.id);
+        if (messageExists) return;
+
 		chat.messages.push(message);
 
 		await store.put(chat);

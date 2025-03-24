@@ -8,7 +8,7 @@ import { ChatContainer, ConversationHeader, InfoButton, MainContainer, Message, 
 import { formatTime } from "@utils/formatTime";
 import { groupMessages } from "@utils/groupMessages";
 import { useTypingStore } from "@shared/store/typingStore";
-
+import { Message as MessageType } from "@app/types/Message";
 
 export const ChatRoom = React.memo(() => {
     const currentUserId = useUserStore((state) => state.currentUserId);
@@ -40,6 +40,17 @@ export const ChatRoom = React.memo(() => {
             handleMessageSend();
         }
     }, [mediaMessage]);
+
+    const [selectedMessage, setSelectedMessage] = useState<{ msg: MessageType, x: number, y: number } | null>(null);
+
+    const handleContextMenu = (event: React.MouseEvent, msg: MessageType) => {
+        event.preventDefault();
+        setSelectedMessage({
+            msg,
+            x: event.clientX,
+            y: event.clientY
+        });
+    };
 
     const handleMessageSend = useCallback(() => {
         if ((message.trim() || mediaMessage.trim()) && currentChat.id && currentUser.id) {
@@ -95,12 +106,38 @@ export const ChatRoom = React.memo(() => {
         setFullScreenImage(null);
     };
 
+    const ContextMenu = ({ selectedMessage, onClose }: { selectedMessage: { msg: MessageType, x: number, y: number } | null, onClose: () => void }) => {
+        if (!selectedMessage) return null;
+    
+        const { msg, x, y } = selectedMessage;
+        const isOwnMessage = msg.userId === currentUser.id;
+    
+        if (!isOwnMessage) return null; 
+    
+        return (
+            <div
+                className="absolute bg-white shadow-lg rounded-md p-3 z-10 flex flex-col gap-2"
+                style={{ top: y, left: x }}
+                onClick={onClose}
+            >
+                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer" onClick={() => console.log('Изменить')}>
+                    ✏️ Изменить
+                </button>
+                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer" onClick={() => console.log('Удалить')}>
+                    🗑️ Удалить
+                </button>
+            </div>
+        );
+    };
+    
+
     if (!chats.length || !users.length || !currentChatId || !currentUserId) {
         return (
             <div className="flex items-center justify-center h-[92vh]">
                 <p className="text-center text-5xl text-[#636567]">Loading...</p>
             </div>
-        );    }
+        );
+    }
 
     const groupedMessages = groupMessages(currentChat, currentUser, users)
 
@@ -138,7 +175,7 @@ export const ChatRoom = React.memo(() => {
                         ? <TypingIndicator content={`${typingUsers.join(", ")} печатает...`} />
                         : null} >
 
-                        {groupedMessages.map((group, index) => (
+                        {groupedMessages.length ? groupedMessages.map((group, index) => (
                             <MessageGroup key={index} direction={group.direction} sender={group.senderName} sentTime={group.messages[0].date}>
                                 {group.direction == 'incoming' ?
                                     <MessageGroup.Header>{group.senderName}</MessageGroup.Header>
@@ -152,8 +189,8 @@ export const ChatRoom = React.memo(() => {
                                                 message: msg.text,
                                                 direction: group.direction,
                                                 position: 'normal'
-                                            }}
-                                            onDoubleClick={() => openFullScreenImage(msg.media)}
+                                            }}                             
+                                            onContextMenu={(e) => handleContextMenu(e, msg)}                                     
                                         >
                                             {msg.media ? (
                                                 <Message.ImageContent
@@ -161,6 +198,7 @@ export const ChatRoom = React.memo(() => {
                                                     alt="sent-img"
                                                     className="cursor-pointer"
                                                     width={400}
+                                                    onClick={() => openFullScreenImage(msg.media)}
                                                 />
                                             ) : null}
                                         </Message>
@@ -168,7 +206,11 @@ export const ChatRoom = React.memo(() => {
                                 </MessageGroup.Messages>
                                 <MessageGroup.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}>{formatTime(group.messages[group.messages.length - 1].date)}</MessageGroup.Footer>
                             </MessageGroup>
-                        ))}
+                        )) : <MessageList.Content>
+                            <div className="flex items-center justify-center h-[92vh]">
+                                <p className="text-center text-5xl text-[#636567]">Write your first message in this chat room!</p>
+                            </div>
+                        </MessageList.Content>}
 
                     </MessageList>
 
@@ -182,6 +224,8 @@ export const ChatRoom = React.memo(() => {
                     />
                 </ChatContainer>
             </MainContainer>
+            <ContextMenu selectedMessage={selectedMessage} onClose={() => setSelectedMessage(null)} />
+
         </>
     );
 });
