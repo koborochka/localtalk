@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
         <header className='w-[80vw] h-[8vh] mx-auto flex items-center'>
             <div className='flex flex-1 gap-1 text-3xl text-blue-500'>
                 <IoChatbubblesSharp height={50} />
-                <p>Localchat</p>
+                <p>LocalTalk</p>
             </div>
             <div className='flex gap-3'>
                 <div className='flex text-[#636567] gap-1 items-center'>

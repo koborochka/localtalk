@@ -119,10 +119,8 @@ export const ChatRoom = React.memo(() => {
                 </div>
             )}
 
-            <MainContainer style={{
-                height: '92vh',
-                maxWidth: '80vw',
-                margin: '0 auto'
+            <MainContainer className="max-w-[80vw] mx-auto" style={{
+                height: '92vh'
             }}>
                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
                 <ChatContainer>
