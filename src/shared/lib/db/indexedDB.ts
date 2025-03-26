@@ -69,6 +69,22 @@ export const db = {
 		await store.put(chat);
 		return tx.done;
 	},
+    async deleteMessageFromChat(chatId: string, messageId: string) {
+        const dbInstance = await dbPromise;
+        const tx = dbInstance.transaction("chats", "readwrite");
+        const store = tx.objectStore("chats");
+    
+        const chat = await store.get(chatId);
+        if (!chat) {
+            console.error(`Чат с id ${chatId} не найден`);
+            return;
+        }
+    
+        chat.messages = chat.messages.filter((msg: Message) => msg.id !== messageId);
+    
+        await store.put(chat);
+        return tx.done;
+    },    
 	async getAllUsers() {
 		return (await dbPromise).getAll("users");
 	},

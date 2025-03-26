@@ -33,8 +33,7 @@ export const useChatStore = create<ChatStore>((set) => {
 			});
 		}
         if (event.data.type === "UPDATE_MESSAGE" && event.data.chatId) {
-            db.updateMessageInChat(event.data.chatId, event.data.messageId, event.data.message);
-            
+            db.updateMessageInChat(event.data.chatId, event.data.messageId, event.data.message);   
             set((state) => {
                 const updatedChats = state.chats.map((chat) =>
                     chat.id === event.data.chatId
@@ -42,7 +41,7 @@ export const useChatStore = create<ChatStore>((set) => {
                               ...chat,
                               messages: chat.messages.map((msg) =>
                                   msg.id === event.data.messageId
-                                      ? { ...msg, ...event.data.message } // Обновляем только нужное сообщение
+                                      ? { ...msg, ...event.data.message }
                                       : msg
                               ),
                           }
@@ -51,7 +50,23 @@ export const useChatStore = create<ChatStore>((set) => {
                 return { chats: updatedChats };
             });
         }
-        
+        if (event.data.type === "DELETE_MESSAGE" && event.data.chatId) {
+            db.deleteMessageFromChat(event.data.chatId, event.data.messageId);
+            
+            set((state) => {
+                const updatedChats = state.chats.map((chat) =>
+                    chat.id === event.data.chatId
+                        ? {
+                              ...chat,
+                              messages: chat.messages.filter(
+                                  (msg) => msg.id !== event.data.messageId
+                              ),
+                          }
+                        : chat
+                );
+                return { chats: updatedChats };
+            });
+        }        
 	};
 
 	return {

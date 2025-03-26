@@ -41,17 +41,6 @@ export const ChatRoom = React.memo(() => {
         }
     }, [mediaMessage]);
 
-    const [selectedMessage, setSelectedMessage] = useState<{ msg: MessageType, x: number, y: number } | null>(null);
-
-    const handleContextMenu = (event: React.MouseEvent, msg: MessageType) => {
-        event.preventDefault();
-        setSelectedMessage({
-            msg,
-            x: event.clientX,
-            y: event.clientY
-        });
-    };
-
     const handleMessageSend = useCallback(() => {
         if ((message.trim() || mediaMessage.trim()) && currentChat.id && currentUser.id) {
             sendMessage(currentChat.id, currentUser.id, message, mediaMessage);
@@ -66,6 +55,7 @@ export const ChatRoom = React.memo(() => {
     const originalMessageText = useRef<string>("");
 
     const editMessage = useMessageStore((state) => state.editMessage);
+    const deleteMessage = useMessageStore((state) => state.deleteMessage);
 
     const handleEditClick = (msg: MessageType) => {
         setEditingMessageId(msg.id);
@@ -84,6 +74,10 @@ export const ChatRoom = React.memo(() => {
         setEditingMessageId(null);
         setEditedMessageText("");
         originalMessageText.current = "";
+    };
+
+    const handleMessageDelete = (msgId: string) => {
+        deleteMessage(currentChat.id, msgId);   
     };
 
     const handleAttachClick = () => {
@@ -130,6 +124,17 @@ export const ChatRoom = React.memo(() => {
         setFullScreenImage(null);
     };
 
+    const [selectedMessage, setSelectedMessage] = useState<{ msg: MessageType, x: number, y: number } | null>(null);
+
+    const handleContextMenu = (event: React.MouseEvent, msg: MessageType) => {
+        event.preventDefault();
+        setSelectedMessage({
+            msg,
+            x: event.clientX,
+            y: event.clientY
+        });
+    };
+
     const ContextMenu = ({ selectedMessage, onClose }: { selectedMessage: { msg: MessageType, x: number, y: number } | null, onClose: () => void }) => {
         if (!selectedMessage) return null;
 
@@ -149,7 +154,7 @@ export const ChatRoom = React.memo(() => {
                     ✏️ Изменить
                 </button>
                 <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer"
-                    onClick={() => console.log('Удалить')}>
+                    onClick={() => handleMessageDelete(selectedMessage.msg.id)}>
                     🗑️ Удалить
                 </button>
             </div>
@@ -202,30 +207,35 @@ export const ChatRoom = React.memo(() => {
                         : null} >
 
                         {groupedMessages.length ? groupedMessages.map((group, index) => (
-                            <MessageGroup key={index} direction={group.direction} sender={group.senderName} sentTime={group.messages[0].date}>
+                            <MessageGroup 
+                            key={index} 
+                            direction={group.direction} 
+                            sender={group.senderName} 
+                            sentTime={group.messages[0].date}
+                            >
                                 {group.direction == 'incoming' ?
                                     <MessageGroup.Header className="font-semibold">{group.senderName}</MessageGroup.Header>
                                     : ''
                                 }
-                                <MessageGroup.Messages >
+                                <MessageGroup.Messages>
                                     {group.messages.map((msg) => (
                                         <Message
                                             key={msg.id}
                                             className="relative w-fit overflow-visible"
                                             model={{
-                                                message: msg.text,
                                                 direction: group.direction,
                                                 position: 'normal'
                                             }}
                                             onContextMenu={(e) => handleContextMenu(e, msg)}
+                                            onClick={() => openFullScreenImage(msg.media)}
                                         >
+                                            {msg.text ? (<Message.TextContent>{msg.text}</Message.TextContent>) : null}
                                             {msg.media ? (
                                                 <Message.ImageContent
                                                     src={msg.media}
                                                     alt="sent-img"
                                                     className="cursor-pointer"
                                                     width={400}
-                                                    onClick={() => openFullScreenImage(msg.media)}
                                                 />
                                             ) : null}
 
@@ -249,7 +259,6 @@ export const ChatRoom = React.memo(() => {
                                                 <Message.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}
                                                 >Edited</Message.Footer>
                                             ) : null}
-                                    
                                         </Message>
                                     ))}
                                 </MessageGroup.Messages>
