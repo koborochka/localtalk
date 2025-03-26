@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { Chat } from "../../app/types/Chat";
-import { Message } from "../../app/types/Message";
+import { Chat } from "@app/types/Chat";
+import { Message } from "@app/types/Message";
 import { db } from "@shared/lib/db/indexedDB";
 
 const channel = new BroadcastChannel("chat_channel");
@@ -32,6 +32,26 @@ export const useChatStore = create<ChatStore>((set) => {
 				return { chats: updatedChats };
 			});
 		}
+        if (event.data.type === "UPDATE_MESSAGE" && event.data.chatId) {
+            db.updateMessageInChat(event.data.chatId, event.data.messageId, event.data.message);
+            
+            set((state) => {
+                const updatedChats = state.chats.map((chat) =>
+                    chat.id === event.data.chatId
+                        ? {
+                              ...chat,
+                              messages: chat.messages.map((msg) =>
+                                  msg.id === event.data.messageId
+                                      ? { ...msg, ...event.data.message } // Обновляем только нужное сообщение
+                                      : msg
+                              ),
+                          }
+                        : chat
+                );
+                return { chats: updatedChats };
+            });
+        }
+        
 	};
 
 	return {

@@ -41,37 +41,18 @@ export const useMessageStore = create<MessageStore>((set) => {
 			});
 		},
 
-		editMessage: (chatId, messageId, newText) => {
-			set(() => {
-				const chatStore = useChatStore.getState();
-				const chats = chatStore.chats.map((chat) => {
-					if (chat.id === chatId) {
-						return {
-							...chat,
-							messages: chat.messages.map((msg) =>
-								msg.id === messageId
-									? { ...msg, text: newText, edited: true }
-									: msg
-							),
-						};
-					}
-					return chat;
-				});
-
-				localStorage.setItem("chats", JSON.stringify(chats));
-				useChatStore.setState({ chats });
-
-				const updatedChat = chats.find((chat) => chat.id === chatId);
-				if (updatedChat) {
-					channel.postMessage({
-						type: "UPDATE_CHAT",
-						chatId,
-						messages: updatedChat.messages,
-					});
-				}
-
-				return {};
-			});
+		editMessage: async (chatId, messageId, newText) => {
+            const chatStore = useChatStore.getState();
+            const chat = chatStore.chats.find((chat) => chat.id === chatId);
+            const message =  chat?.messages.find((message) => message.id === messageId);
+            const updatedMessage =  {...message, text: newText, edited: true };
+                  
+            channel.postMessage({
+                type: "UPDATE_MESSAGE",
+                chatId,
+                messageId,
+                message: updatedMessage,
+            });
 		},
 
 		deleteMessage: (chatId, messageId) => {

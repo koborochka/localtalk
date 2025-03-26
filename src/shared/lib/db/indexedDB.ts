@@ -63,8 +63,8 @@ export const db = {
 		}
 
 		chat.messages = chat.messages.map((msg) =>
-			msg.id === messageId ? { ...msg, ...updatedMessage } : msg
-		);
+            msg.id === messageId ? { ...msg, ...updatedMessage } : msg
+        );
 
 		await store.put(chat);
 		return tx.done;

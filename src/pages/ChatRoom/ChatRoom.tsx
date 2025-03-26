@@ -61,6 +61,30 @@ export const ChatRoom = React.memo(() => {
         }
     }, [message, mediaMessage, currentChat.id, currentUser.id, sendMessage, setTyping]);
 
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+    const [editedMessageText, setEditedMessageText] = useState<string>("");
+    const originalMessageText = useRef<string>("");
+
+    const editMessage = useMessageStore((state) => state.editMessage);
+
+    const handleEditClick = (msg: MessageType) => {
+        setEditingMessageId(msg.id);
+        setEditedMessageText(msg.text ? msg.text : "");
+        originalMessageText.current = msg.text || "";
+    };
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditedMessageText(e.target.value);
+    };
+
+    const handleEditSubmit = (msgId: string) => {        
+        if (editedMessageText.trim() && editedMessageText.trim() !== originalMessageText.current.trim()) {
+            editMessage(currentChat.id, msgId, editedMessageText);
+        }
+        setEditingMessageId(null);
+        setEditedMessageText("");
+        originalMessageText.current = "";
+    };
 
     const handleAttachClick = () => {
         if (fileInputRef.current) {
@@ -108,28 +132,30 @@ export const ChatRoom = React.memo(() => {
 
     const ContextMenu = ({ selectedMessage, onClose }: { selectedMessage: { msg: MessageType, x: number, y: number } | null, onClose: () => void }) => {
         if (!selectedMessage) return null;
-    
+
         const { msg, x, y } = selectedMessage;
         const isOwnMessage = msg.userId === currentUser.id;
-    
-        if (!isOwnMessage) return null; 
-    
+
+        if (!isOwnMessage) return null;
+
         return (
             <div
                 className="absolute bg-white shadow-lg rounded-md p-3 z-10 flex flex-col gap-2"
                 style={{ top: y, left: x }}
                 onClick={onClose}
             >
-                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer" onClick={() => console.log('Изменить')}>
+                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer"
+                    onClick={() => handleEditClick(selectedMessage.msg)}>
                     ✏️ Изменить
                 </button>
-                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer" onClick={() => console.log('Удалить')}>
+                <button className="text-left transform transition-transform duration-200 hover:scale-105 cursor-pointer"
+                    onClick={() => console.log('Удалить')}>
                     🗑️ Удалить
                 </button>
             </div>
         );
     };
-    
+
 
     if (!chats.length || !users.length || !currentChatId || !currentUserId) {
         return (
@@ -178,19 +204,20 @@ export const ChatRoom = React.memo(() => {
                         {groupedMessages.length ? groupedMessages.map((group, index) => (
                             <MessageGroup key={index} direction={group.direction} sender={group.senderName} sentTime={group.messages[0].date}>
                                 {group.direction == 'incoming' ?
-                                    <MessageGroup.Header>{group.senderName}</MessageGroup.Header>
+                                    <MessageGroup.Header className="font-semibold">{group.senderName}</MessageGroup.Header>
                                     : ''
                                 }
                                 <MessageGroup.Messages >
                                     {group.messages.map((msg) => (
                                         <Message
                                             key={msg.id}
+                                            className="relative w-fit overflow-visible"
                                             model={{
                                                 message: msg.text,
                                                 direction: group.direction,
                                                 position: 'normal'
-                                            }}                             
-                                            onContextMenu={(e) => handleContextMenu(e, msg)}                                     
+                                            }}
+                                            onContextMenu={(e) => handleContextMenu(e, msg)}
                                         >
                                             {msg.media ? (
                                                 <Message.ImageContent
@@ -201,6 +228,28 @@ export const ChatRoom = React.memo(() => {
                                                     onClick={() => openFullScreenImage(msg.media)}
                                                 />
                                             ) : null}
+
+                                            {msg.id === editingMessageId ? (
+                                                <Message.CustomContent>
+                                                    <input
+                                                        type="text"
+                                                        value={editedMessageText}
+                                                        onChange={handleEditChange}
+                                                        onBlur={() => handleEditSubmit(msg.id)}
+                                                        onKeyDown={(e) => e.key === "Enter" && handleEditSubmit(msg.id)}
+                                                        className="border p-1 w-full"
+                                                        autoFocus
+                                                    />
+                                                </Message.CustomContent>
+                                            ) : (
+                                                msg.text
+                                            )}
+
+                                            {msg.edited ? (
+                                                <Message.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}
+                                                >Edited</Message.Footer>
+                                            ) : null}
+                                    
                                         </Message>
                                     ))}
                                 </MessageGroup.Messages>
