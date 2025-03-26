@@ -4,11 +4,12 @@ import { useChatStore } from "@shared/store/chatStore";
 import { useMessageStore } from "@shared/store/messageStore";
 import { Chat } from "@app/types/Chat";
 import { User } from "@app/types/User";
-import { ChatContainer, ConversationHeader, InfoButton, MainContainer, Message, MessageGroup, MessageInput, MessageList, TypingIndicator } from "@chatscope/chat-ui-kit-react";
+import { Avatar, ChatContainer, ConversationHeader, InfoButton, MainContainer, Message, MessageGroup, MessageInput, MessageList, TypingIndicator } from "@chatscope/chat-ui-kit-react";
 import { formatTime } from "@utils/formatTime";
 import { groupMessages } from "@utils/groupMessages";
 import { useTypingStore } from "@shared/store/typingStore";
 import { Message as MessageType } from "@app/types/Message";
+import userAvatarPlaceholder from '@shared/assets/user_placeholder.png';
 
 export const ChatRoom = React.memo(() => {
     const currentUserId = useUserStore((state) => state.currentUserId);
@@ -217,6 +218,10 @@ export const ChatRoom = React.memo(() => {
                                     <MessageGroup.Header className="font-semibold">{group.senderName}</MessageGroup.Header>
                                     : ''
                                 }
+                                {group.direction == 'incoming' ?
+                                    <Avatar src={users.find((user)=> user.id === group.senderId)?.avatar || userAvatarPlaceholder} name={group.senderName} />
+                                : ''
+                                }
                                 <MessageGroup.Messages>
                                     {group.messages.map((msg) => (
                                         <Message
@@ -224,12 +229,12 @@ export const ChatRoom = React.memo(() => {
                                             className="relative w-fit overflow-visible"
                                             model={{
                                                 direction: group.direction,
-                                                position: 'normal'
+                                                position: 'normal',
+                                                message: msg.text                                       
                                             }}
                                             onContextMenu={(e) => handleContextMenu(e, msg)}
                                             onClick={() => openFullScreenImage(msg.media)}
                                         >
-                                            {msg.text ? (<Message.TextContent>{msg.text}</Message.TextContent>) : null}
                                             {msg.media ? (
                                                 <Message.ImageContent
                                                     src={msg.media}

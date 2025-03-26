@@ -6,11 +6,12 @@ type UserStore = {
 	users: User[];
 	currentUserId: string | null;
 	setUser: (name: string) => void;
+    setUserAvatar: (id: string, avatar: string) => void;
 };
 
 const channel = new BroadcastChannel("user_channel"); 
 
-export const useUserStore = create<UserStore>((set) => {
+export const useUserStore = create<UserStore>((set, get) => {
     db.getAllUsers().then((users) => set({users}))
 
     const storedUserId = sessionStorage.getItem("currentUserId") || ""
@@ -45,5 +46,24 @@ export const useUserStore = create<UserStore>((set) => {
                 return { users, currentUserId: user.id };
             });
         },
+        setUserAvatar: async (id, avatar) => {
+            const state = get();
+            let users = [...state.users];
+            
+            let user = users.find((u) => u.id === id);
+        
+            if (user) {
+                user.avatar = avatar;
+                
+                await db.updateUser(user.id, user);
+        
+                channel.postMessage({
+                    type: "UPDATE_USERS",
+                    users
+                });
+        
+                set({ users });
+            }
+        }    
     }
 });

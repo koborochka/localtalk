@@ -91,4 +91,20 @@ export const db = {
 	async addUser(user: User) {
 		return (await dbPromise).put("users", user);
 	},
+    async updateUser(userId: string, updatedUser: User) {
+        const dbInstance = await dbPromise;
+		const tx = dbInstance.transaction("users", "readwrite");
+		const store = tx.objectStore("users");
+
+		const user = (await store.get(userId)) as User;
+		if (!user) {
+			console.error(`Пользователь с id ${userId} не найден`);
+			return;
+		}
+
+		///
+
+		await store.put({...updatedUser});
+		return tx.done;
+    }
 };

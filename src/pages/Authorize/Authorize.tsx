@@ -24,19 +24,19 @@ export const Authorize = () => {
                 <input
                     className="w-full p-2 border border-gray-300 rounded mt-1"
                     type="text"
-                    placeholder="Введите имя"
+                    placeholder="User name"
                     value={userName}
                     onChange={(e) => setName(e.target.value)}
                 />
                 <input
                     className="w-full p-2 border border-gray-300 rounded mt-1"
                     type="text"
-                    placeholder="Введите комнату"
+                    placeholder="Room name"
                     value={chatName}
                     onChange={(e) => setchatName(e.target.value)}
                 />
                 <button className="w-full bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-700 cursor-pointer" onClick={handleLogin}>
-                    Войти
+                    Log in
                 </button>
             </form>
         </div>
