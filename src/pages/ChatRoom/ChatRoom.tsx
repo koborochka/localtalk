@@ -57,7 +57,7 @@ export const ChatRoom = React.memo(() => {
                     </ConversationHeader>
 
                     <MessageList typingIndicator={typingUsers.length > 0
-                        ? <TypingIndicator className="pl-1 ml-15" content={`${typingUsers.join(", ")} печатает...`} />
+                        ? <TypingIndicator className="pl-1 ml-15" content={`${typingUsers.join(", ")} typing...`} />
                         : null} >
 
                         <MessageList.Content className="pb-10">

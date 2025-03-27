@@ -1,5 +1,5 @@
 import { AttachmentButton, MessageInput, SendButton } from "@chatscope/chat-ui-kit-react";
-import { useMessageStore } from "@shared/store/messageStore";
+import { useMessageStore } from "@features/messages/messageStore";
 import { useTypingStore } from "@shared/store/typingStore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react"; 
@@ -46,14 +46,16 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
     }, [isEmojiOpen]);
 
     const handleMessageSend = () => {
-        if ((message.trim() || mediaMessage.trim()) && currentChatId && currentUserId) {
-            sendMessage(currentChatId, currentUserId, message, mediaMessage);
+        const sanitizedMessage = message.replace(/&nbsp;/g, " ");
+    
+        if ((sanitizedMessage.trim() || mediaMessage.trim()) && currentChatId && currentUserId) {
+            sendMessage(currentChatId, currentUserId, sanitizedMessage, mediaMessage);
             setTyping(currentChatId, currentUserId, false);
             setMediaMessage("");
             setMessage("");
         }
     };
-
+    
     const handleAttachClick = () => {
         fileInputRef.current?.click();
     };

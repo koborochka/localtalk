@@ -1,5 +1,5 @@
-import { Message } from "../../app/types/Message";
-import { useChatStore } from "./chatStore";
+import { Message } from "@app/types/Message";
+import { useChatStore } from "@shared/store/chatStore";
 import { create } from "zustand";
 
 const channel = new BroadcastChannel("chat_channel");

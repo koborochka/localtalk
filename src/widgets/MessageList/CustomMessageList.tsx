@@ -4,7 +4,7 @@ import { groupMessages } from "@utils/groupMessages";
 import React, { useRef, useState } from 'react';
 import userAvatarPlaceholder from '@shared/assets/user_placeholder.png';
 import { Message as MessageType } from "@app/types/Message";
-import { useMessageStore } from '@shared/store/messageStore';
+import { useMessageStore } from '@features/messages/messageStore';
 import { Chat } from '@app/types/Chat';
 import { User } from '@app/types/User';
 import ContextMenu from '@shared/components/ContextMenu';
@@ -28,9 +28,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
     const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; items: any[] } | null>(null);
 
-    const editMessage = useMessageStore((state) => state.editMessage);
-    const deleteMessage = useMessageStore((state) => state.deleteMessage);
-
+    const {editMessage, deleteMessage} = useMessageStore();
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEditedMessageText(e.target.value);
@@ -119,7 +117,9 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                         : ''
                     }
                     {group.direction == 'incoming' ?
-                        <Avatar src={users.find((user) => user.id === group.senderId)?.avatar || userAvatarPlaceholder} name={group.senderName} />
+                        <Avatar   
+                            className="rounded-full w-32 h-32 object-cover"
+                            src={users.find((user) => user.id === group.senderId)?.avatar || userAvatarPlaceholder} name={group.senderName} />
                         : ''
                     }
                     <MessageGroup.Messages>
