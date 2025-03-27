@@ -47,11 +47,14 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
 
     const handleMessageSend = () => {
         const sanitizedMessage = message.replace(/&nbsp;/g, " ");
-    
-        if ((sanitizedMessage.trim() || mediaMessage.trim()) && currentChatId && currentUserId) {
+
+        if(mediaMessage.trim() && currentChatId && currentUserId){
+            sendMessage(currentChatId, currentUserId, "", mediaMessage);
+            setMediaMessage("");
+        }     
+        else if((sanitizedMessage.trim()) && currentChatId && currentUserId) {
             sendMessage(currentChatId, currentUserId, sanitizedMessage, mediaMessage);
             setTyping(currentChatId, currentUserId, false);
-            setMediaMessage("");
             setMessage("");
         }
     };

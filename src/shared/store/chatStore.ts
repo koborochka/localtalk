@@ -99,7 +99,6 @@ export const useChatStore = create<ChatStore>((set, get) => {
 					id: crypto.randomUUID(),
 					name,
 					messages: [] as Message[],
-					pinnedMessagesID: [],
 				};
 				chats.push(chat);
 

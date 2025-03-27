@@ -28,7 +28,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
     const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; items: any[] } | null>(null);
 
-    const {editMessage, deleteMessage} = useMessageStore();
+    const { editMessage, deleteMessage } = useMessageStore();
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEditedMessageText(e.target.value);
@@ -56,13 +56,14 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
     const handleContextMenu = (event: React.MouseEvent, msg: MessageType) => {
         event.preventDefault();
         const isOwnMessage = msg.userId === currentUser.id;
+        const canEdit = !msg.media;
 
         if (isOwnMessage) {
             setContextMenu({
                 x: event.pageX,
                 y: event.pageY,
                 items: [
-                    { label: "✏️ Изменить", onClick: () => handleEditClick(msg) },
+                ...(canEdit ? [{ label: "✏️ Изменить", onClick: () => handleEditClick(msg) }] : []),
                     { label: "🗑️ Удалить", onClick: () => handleDeleteClick(msg.id) }
                 ]
             });
@@ -117,9 +118,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                         : ''
                     }
                     {group.direction == 'incoming' ?
-                        <Avatar   
-                            className="rounded-full w-32 h-32 object-cover"
-                            src={users.find((user) => user.id === group.senderId)?.avatar || userAvatarPlaceholder} name={group.senderName} />
+                        <Avatar src={users.find((user) => user.id === group.senderId)?.avatar || userAvatarPlaceholder} name={group.senderName} />
                         : ''
                     }
                     <MessageGroup.Messages>
