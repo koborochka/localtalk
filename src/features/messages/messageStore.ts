@@ -25,7 +25,6 @@ export const useMessageStore = create<MessageStore>(() => {
 				media: media,
 				date: new Date().toISOString(),
 				edited: false,
-				reactions: {},
 			};
 
 			channel.postMessage({
