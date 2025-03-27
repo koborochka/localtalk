@@ -1,6 +1,6 @@
 import { Navigate, Route } from "react-router-dom"
 import { Routes } from "react-router-dom"
-import { Header } from "@widgets/header/Header"
+import { Header } from "@widgets/Header/Header"
 import { Authorize } from "@pages/Authorize/Authorize"
 import { ChatRoom } from "@pages/ChatRoom/ChatRoom"
 import { Profile } from "@pages/Profile/Profile"

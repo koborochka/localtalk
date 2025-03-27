@@ -102,8 +102,6 @@ export const db = {
 			return;
 		}
 
-		///
-
 		await store.put({...updatedUser});
 		return tx.done;
     }
