@@ -19,7 +19,7 @@ export const Authorize = () => {
 
     return (
         <div className="flex flex-wrap justify-center justify-items-center items-center max-w-screen mt-40">
-            <form className="flex flex-col items-center gap-2 justify-center bg-gray-50 p-4 pt-8 rounded-lg shadow-md w-[40%] min-w-[250px]" >
+            <form className="flex flex-col items-center gap-2 justify-center bg-gray-50 p-4 pt-8 rounded-lg shadow-md w-[30%] min-w-[250px]" >
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Member Login</h2>         
                 <input
                     className="w-full p-2 border border-gray-300 rounded mt-1"

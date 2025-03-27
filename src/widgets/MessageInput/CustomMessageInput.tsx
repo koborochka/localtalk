@@ -24,15 +24,14 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({currentCh
         }
     }, [mediaMessage]);
 
-    const handleMessageSend = useCallback(() => {
+    const handleMessageSend = () => {
         if ((message.trim() || mediaMessage.trim()) && currentChatId && currentUserId) {
             sendMessage(currentChatId, currentUserId, message, mediaMessage);
             setTyping(currentChatId, currentUserId, false);
             setMediaMessage("");
             setMessage("");
         }
-    }, [message, mediaMessage, currentChatId, currentUserId, sendMessage, setTyping]);
-
+    }
 
     const handleAttachClick = () => {
         if (fileInputRef.current) {

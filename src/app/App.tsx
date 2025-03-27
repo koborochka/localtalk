@@ -7,7 +7,7 @@ import { Profile } from "@pages/Profile/Profile"
 
 function App() {
     return (
-        <div className="w-full min-h-screen bg-gradient-to-br from-[#ebc7e8] to-[#7d8bd2]">
+        <div className="w-full min-h-screen bg-gradient-to-br from-[#FFD3FD] to-[#8EB2FB]">
             <Header />
             <Routes>
                 <Route path="/" element={<Navigate to="/auth" />} />

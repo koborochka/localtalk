@@ -39,9 +39,8 @@ export const ChatRoom = React.memo(() => {
 
     return (
         <>
-            <MainContainer className="max-w-[80vw] mx-auto" style={{
-                height: '92vh'
-            }}>
+        <MainContainer className="w-full md:max-w-[80vw] mx-auto"
+            style={{height: '92vh'}}>
                 <ChatContainer>
                     <ConversationHeader>
                         <ConversationHeader.Content

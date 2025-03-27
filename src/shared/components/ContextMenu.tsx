@@ -28,7 +28,7 @@ const ContextMenu = ({ isOpen, position, onClose, items }: ContextMenuProps) => 
     return (
         <div
             className="fixed bg-gray-50 shadow-lg rounded-md p-3 z-50 flex flex-col gap-2"
-            style={{ top: `${position.y}px`, left: `${position.x}px` }}
+            style={{ top: `${position.y}px`, left: `${position.x-110}px` }}
         >
             {items.map((item, index) => (
                 <button

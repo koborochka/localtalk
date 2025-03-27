@@ -8,6 +8,7 @@ import { useMessageStore } from '@shared/store/messageStore';
 import { Chat } from '@app/types/Chat';
 import { User } from '@app/types/User';
 import ContextMenu from '@shared/components/ContextMenu';
+import '@shared/ui/styles/message-list.css'
 
 type CustomMessageListProps = {
     currentUserId: string | null,
@@ -112,7 +113,6 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                     direction={group.direction}
                     sender={group.senderName}
                     sentTime={group.messages[0].date}
-                    className='bg-red'
                 >
                     {group.direction == 'incoming' ?
                         <MessageGroup.Header className="font-semibold">{group.senderName}</MessageGroup.Header>
@@ -126,16 +126,15 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                         {group.messages.map((msg) => (
                             <Message
                                 key={msg.id}
-                                className="relative w-fit overflow-visible "
+                                className="relative w-fit overflow-visible font-jost"
                                 model={{
                                     direction: group.direction,
                                     position: 'normal',
                                     message: msg.text,
-                                    
+                                    type: 'text'
                                 }}
                                 onContextMenu={(e) => handleContextMenu(e, msg)}
                                 onClick={() => openFullScreenImage(msg.media)}
-                                background-color='black'
                             >
                                 {msg.media ? (
                                     <Message.ImageContent
@@ -159,7 +158,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                                         />
                                     </Message.CustomContent>
                                 ) : (
-                                    msg.text
+                                    <Message.TextContent>{msg.text}</Message.TextContent>
                                 )}
 
                                 {msg.edited ? (

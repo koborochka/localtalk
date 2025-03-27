@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Jost', 'Inter', sans-serif;
     font-display: swap;
     overflow-x: hidden;
 }

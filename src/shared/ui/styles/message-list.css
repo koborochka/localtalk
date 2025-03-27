@@ -1,0 +1,22 @@
+.cs-message-group--outgoing
+	.cs-message-group__messages
+	.cs-message
+	.cs-message__content {
+	background-color: #b1d4ff;
+}
+
+.cs-message__content {
+	font-family: inherit;
+}
+.cs-message-input__content-editor-wrapper,
+.cs-message-input__content-editor {
+	background-color: #e6f1ff;
+}
+.cs-message__content {
+	background-color: #e6f1ff;
+}
+
+.cs-button svg {
+	font-size: 1.5rem;
+	color: #303754;
+}
