@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
                 <p className='text-xl text-center md:text-[26px]'>LocalTalk</p>
             </div>
             {isAuth && 
-            <div className='flex gap-10'>
+            <div className='flex gap-5 md:gap-10'>
                 <Link to="/chat" className='flex gap-1 items-center cursor-pointer'>
                     <PiChatCircleDotsBold size={24} />
                     <p className='text-xl hidden md:block'>Chat</p>
