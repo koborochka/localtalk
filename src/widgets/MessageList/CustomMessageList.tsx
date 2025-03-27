@@ -44,7 +44,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
         setEditedMessageText("");
         originalMessageText.current = "";
     };
-        
+
     const handleEditClick = (msg: MessageType) => {
         setEditingMessageId(msg.id);
         setEditedMessageText(msg.text ? msg.text : "");
@@ -136,14 +136,6 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                                 onContextMenu={(e) => handleContextMenu(e, msg)}
                                 onClick={() => openFullScreenImage(msg.media)}
                             >
-                                {msg.media ? (
-                                    <Message.ImageContent
-                                        src={msg.media}
-                                        alt="sent-img"
-                                        className="cursor-pointer"
-                                        width={400} 
-                                    />
-                                ) : null}
 
                                 {msg.id === editingMessageId ? (
                                     <Message.CustomContent>
@@ -158,7 +150,16 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                                         />
                                     </Message.CustomContent>
                                 ) : (
-                                    <Message.TextContent>{msg.text}</Message.TextContent>
+                                    msg.media ? (
+                                        <Message.ImageContent
+                                            src={msg.media}
+                                            alt="sent-img"
+                                            className="cursor-pointer"
+                                            width={400}
+                                        />
+                                    ) : (
+                                        <Message.TextContent>{msg.text}</Message.TextContent>
+                                    )
                                 )}
 
                                 {msg.edited ? (

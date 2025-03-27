@@ -1,5 +1,5 @@
 import { useUserStore } from "@shared/store/userStore";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useChatStore } from "@shared/store/chatStore";
 import { Chat } from "@app/types/Chat";
 import { User } from "@app/types/User";
@@ -8,10 +8,13 @@ import {  ChatContainer, ConversationHeader, InfoButton, InputToolbox, MainConta
 import { useTypingStore } from "@shared/store/typingStore";
 import { CustomMessageList } from "@widgets/MessageList/CustomMessageList";
 import { CustomMessageInput } from "@widgets/MessageInput/CustomMessageInput";
+import { ChatInfoModal } from "@shared/components/ChatInfoModal";
 
 export const ChatRoom = React.memo(() => {
     const { currentUserId, users, getUsers, isGettingUsers} = useUserStore();
     const { currentChatId, chats, getChats, isGettingChats} = useChatStore();
+
+    const [isModalOpen, setIsModalOpen] = useState(false); 
 
     const currentChat = chats.find((chat) => chat.id === currentChatId) || ({} as Chat);
     const currentUser = users.find((user) => user.id === currentUserId) || ({} as User);
@@ -41,6 +44,7 @@ export const ChatRoom = React.memo(() => {
         <>
         <MainContainer className="w-full md:max-w-[80vw] mx-auto"
             style={{height: '92vh'}}>
+                <ChatInfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
                 <ChatContainer>
                     <ConversationHeader>
                         <ConversationHeader.Content
@@ -48,15 +52,15 @@ export const ChatRoom = React.memo(() => {
                             className="text-3xl text-center"
                         />
                         <ConversationHeader.Actions>
-                            <InfoButton title="Show info" />
+                            <InfoButton title="Show info" onClick={() => setIsModalOpen((prev)=> !prev)} />
                         </ConversationHeader.Actions>
                     </ConversationHeader>
 
                     <MessageList typingIndicator={typingUsers.length > 0
-                        ? <TypingIndicator className="pl-1" content={`${typingUsers.join(", ")} печатает...`} />
+                        ? <TypingIndicator className="pl-1 ml-15" content={`${typingUsers.join(", ")} печатает...`} />
                         : null} >
 
-                        <MessageList.Content>
+                        <MessageList.Content className="pb-10">
                             <CustomMessageList {...{currentChatId, currentUserId, chats, users}} />
                         </MessageList.Content>
 

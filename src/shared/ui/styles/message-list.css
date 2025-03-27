@@ -3,6 +3,7 @@
 	.cs-message
 	.cs-message__content {
 	background-color: #b1d4ff;
+    font-size: 1rem;
 }
 
 .cs-message__content {
