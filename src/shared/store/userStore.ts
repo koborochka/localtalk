@@ -23,6 +23,11 @@ export const useUserStore = create<UserStore>((set, get) => {
 		if (event.data.type === "UPDATE_USERS") {
 			set({ users: event.data.users });
 		}
+        if (event.data.type === "ADD_USER") {
+            set((state) => ({
+                users: [...state.users, event.data.user]
+            }));
+        }
     }
 
     return {
@@ -33,26 +38,27 @@ export const useUserStore = create<UserStore>((set, get) => {
         isAuth: !!storedUserId,
 
         setUser: async (name) => {
-            set({isLoggingIn: true})
-            const state = get();
-            let users = [...state.users];
+            set({ isLoggingIn: true });
+            
+            await get().getUsers();
+            let users = get().users;
             let user = users.find((u) => u.name === name);
-
+        
             if (!user) {
                 user = { id: crypto.randomUUID(), name };
-                users.push(user);
-
+        
+                await db.addUser(user);
+        
                 channel.postMessage({
-                    type: "UPDATE_USERS",
-                    users
+                    type: "ADD_USER",
+                    user
                 });
-                
-                await db.addUser(user)
             }
-
+        
             sessionStorage.setItem("currentUserId", user.id);
-            set({ users, currentUserId: user.id, isLoggingIn: false});
+            set({ currentUserId: user.id, isAuth: true, isLoggingIn: false });       
         },
+        
         setUserAvatar: async (id, avatar) => {
             const state = get();
             let users = [...state.users];

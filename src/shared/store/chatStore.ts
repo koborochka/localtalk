@@ -8,19 +8,20 @@ const channel = new BroadcastChannel("chat_channel");
 type ChatStore = {
 	chats: Chat[];
 	currentChatId: string | null;
-
+    isEnteringInChat: boolean;
 	setChat: (name: string) => void;
-    isGettingChats: boolean
-    getChats: () => void
+	isGettingChats: boolean;
+	getChats: () => void;
 };
 
 export const useChatStore = create<ChatStore>((set, get) => {
-
-    const storedChatId = sessionStorage.getItem("currentChatId") || ""
+	const storedChatId = sessionStorage.getItem("currentChatId") || "";
 
 	channel.onmessage = async (event) => {
-		if (event.data.type === "UPDATE_CHATS") {
-			set({ chats: event.data.chats });
+        if (event.data.type === "ADD_CHAT") {
+            const state = get()
+            const updatedChats = [...state.chats, event.data.chat];
+			set({ chats: updatedChats });
 		}
 		if (event.data.type === "ADD_MESSAGE" && event.data.chatId) {
 			await db.addMessageToChat(event.data.chatId, event.data.message);
@@ -66,7 +67,6 @@ export const useChatStore = create<ChatStore>((set, get) => {
 				event.data.chatId,
 				event.data.messageId
 			);
-
 			set((state) => {
 				const updatedChats = state.chats.map((chat) =>
 					chat.id === event.data.chatId
@@ -85,13 +85,17 @@ export const useChatStore = create<ChatStore>((set, get) => {
 
 	return {
 		chats: [],
-        isGettingChats: false, 
+        isGettingChats: false,
 		currentChatId: storedChatId,
+        isEnteringInChat: false,
 
 		setChat: async (name) => {
-			const state = get();
-			let chats = [...state.chats];
-            
+            set({isEnteringInChat: true});
+
+            await get().getChats()
+
+			const chats = get().chats;
+
 			let chat = chats.find((chat) => chat.name === name);
 
 			if (!chat) {
@@ -102,12 +106,13 @@ export const useChatStore = create<ChatStore>((set, get) => {
 				};
 				chats.push(chat);
 
-				channel.postMessage({ type: "UPDATE_CHATS", chats });
-				await db.addChat(chat);
+                
+                channel.postMessage({ type: "ADD_CHAT", chat: chat });
+                await db.addChat(chat);
 			}
 
 			sessionStorage.setItem("currentChatId", chat.id);
-			set({ chats, currentChatId: chat.id });
+			set({ chats, currentChatId: chat.id, isEnteringInChat: false });
 		},
 
         getChats: async () => {

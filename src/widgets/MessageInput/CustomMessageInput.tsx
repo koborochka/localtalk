@@ -100,7 +100,7 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
 
     return (
         <div className="relative flex items-center w-full">                
-            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+            <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
 
             <AttachmentButton onClick={handleAttachClick} />
 

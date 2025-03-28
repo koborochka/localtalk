@@ -11,8 +11,8 @@ import { CustomMessageInput } from "@widgets/MessageInput/CustomMessageInput";
 import { ChatInfoModal } from "@shared/components/ChatInfoModal";
 
 export const ChatRoom = React.memo(() => {
-    const { currentUserId, users, getUsers, isGettingUsers} = useUserStore();
-    const { currentChatId, chats, getChats, isGettingChats} = useChatStore();
+    const { currentUserId, users, getUsers, isGettingUsers, isLoggingIn} = useUserStore();
+    const { currentChatId, chats, getChats, isGettingChats, isEnteringInChat} = useChatStore();
 
     const [isModalOpen, setIsModalOpen] = useState(false); 
 
@@ -31,7 +31,7 @@ export const ChatRoom = React.memo(() => {
     }, [getChats, getUsers]);
 
 
-    if (isGettingChats || isGettingUsers) {
+    if (isGettingChats || isGettingUsers || isLoggingIn || isEnteringInChat || chats.length === 0 || users.length === 0) {
         
         return (
             <div className="flex items-center justify-center h-[92vh]">

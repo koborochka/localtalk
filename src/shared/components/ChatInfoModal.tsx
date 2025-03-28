@@ -8,7 +8,6 @@ type ChatInfoModalProps = {
 export const ChatInfoModal: React.FC<ChatInfoModalProps> = ({ isOpen, onClose }) => {
     const modalRef = useRef<HTMLDivElement | null>(null);
 
-    // Закрытие при клике вне окна
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
