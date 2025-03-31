@@ -2,7 +2,7 @@ import { AttachmentButton, MessageInput, SendButton } from "@chatscope/chat-ui-k
 import { useMessageStore } from "@features/messages/messageStore";
 import { useTypingStore } from "@shared/store/typingStore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import EmojiPicker from "emoji-picker-react"; 
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { FaSmile } from "react-icons/fa";
 
 type CustomMessageInputProps = {
@@ -17,10 +17,9 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const [message, setMessage] = useState("");
-    const [mediaMessage, setMediaMessage] = useState("");
-
-    const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+    const [message, setMessage] = useState<string>("");
+    const [mediaMessage, setMediaMessage] = useState<string>("");
+    const [isEmojiOpen, setIsEmojiOpen] = useState<boolean>(false);
     const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -48,17 +47,16 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
     const handleMessageSend = () => {
         const sanitizedMessage = message.replace(/&nbsp;/g, " ");
 
-        if(mediaMessage.trim() && currentChatId && currentUserId){
+        if (mediaMessage.trim() && currentChatId && currentUserId) {
             sendMessage(currentChatId, currentUserId, "", mediaMessage);
             setMediaMessage("");
-        }     
-        else if((sanitizedMessage.trim()) && currentChatId && currentUserId) {
+        } else if (sanitizedMessage.trim() && currentChatId && currentUserId) {
             sendMessage(currentChatId, currentUserId, sanitizedMessage, mediaMessage);
             setTyping(currentChatId, currentUserId, false);
             setMessage("");
         }
     };
-    
+
     const handleAttachClick = () => {
         fileInputRef.current?.click();
     };
@@ -94,12 +92,12 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
         [currentChatId, currentUserId, setTyping]
     );
 
-    const handleEmojiClick = (emoji: any) => {
-        setMessage((prev) => prev + emoji.emoji);
+    const handleEmojiClick = (emojiData: EmojiClickData) => {
+        setMessage((prev) => prev + emojiData.emoji);
     };
 
     return (
-        <div className="relative flex items-center w-full">                
+        <div className="relative flex items-center w-full">
             <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
 
             <AttachmentButton onClick={handleAttachClick} />
@@ -113,7 +111,7 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
             </button>
 
             {isEmojiOpen && (
-                <div ref={emojiPickerRef} className="absolute bottom-12 left-0 z-10 w-9  ">
+                <div ref={emojiPickerRef} className="absolute bottom-12 left-0 z-10 w-9">
                     <EmojiPicker onEmojiClick={handleEmojiClick} />
                 </div>
             )}
@@ -124,7 +122,7 @@ export const CustomMessageInput: React.FC<CustomMessageInputProps> = ({ currentC
                 onChange={handleTyping}
                 onSend={handleMessageSend}
                 autoFocus={true}
-                placeholder="Type message here..."
+                placeholder="Введите сообщение..."
                 onAttachClick={handleAttachClick}
                 attachButton={false}
                 sendButton={false}

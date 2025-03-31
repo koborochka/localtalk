@@ -20,23 +20,23 @@ export const Authorize = () => {
     return (
         <div className="flex flex-wrap justify-center justify-items-center items-center max-w-screen mt-40">
             <form className="flex flex-col items-center gap-2 justify-center bg-gray-50 p-4 pt-8 rounded-lg shadow-md w-[30%] min-w-[250px]" >
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Member Login</h2>         
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Регистрация пользователя</h2>         
                 <input
                     className="w-full p-2 border border-gray-300 rounded mt-1"
                     type="text"
-                    placeholder="User name"
+                    placeholder="Имя пользователя"
                     value={userName}
                     onChange={(e) => setName(e.target.value)}
                 />
                 <input
                     className="w-full p-2 border border-gray-300 rounded mt-1"
                     type="text"
-                    placeholder="Room name"
+                    placeholder="Название комнаты"
                     value={chatName}
                     onChange={(e) => setchatName(e.target.value)}
                 />
                 <button className="w-full bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-700 cursor-pointer" onClick={handleLogin}>
-                    Log in
+                    Войти
                 </button>
             </form>
         </div>

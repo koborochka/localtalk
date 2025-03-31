@@ -43,7 +43,7 @@ export const Profile: React.FC = () => {
                                 alt="Avatar"
                                 className="rounded-full w-32 h-32 object-cover mb-4 hover:scale-105 transition-transform"
                             />
-                            {!user?.avatar ? 'Change Avatar' : ''}
+                            {!user?.avatar ? 'Измените аватар' : ''}
                         </label>
                         <input
                             id="avatar"

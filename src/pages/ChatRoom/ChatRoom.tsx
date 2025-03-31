@@ -35,7 +35,7 @@ export const ChatRoom = React.memo(() => {
         
         return (
             <div className="flex items-center justify-center h-[92vh]">
-                <p className="text-center text-5xl text-[#636567]">Loading...</p>
+                <p className="text-center text-5xl text-[#636567]">Загрузка...</p>
             </div>
         );
     }
@@ -48,7 +48,7 @@ export const ChatRoom = React.memo(() => {
                 <ChatContainer>
                     <ConversationHeader>
                         <ConversationHeader.Content
-                            info={`room: ${currentChat.name}`}
+                            info={`Комната: ${currentChat.name}`}
                             className="text-3xl text-center"
                         />
                         <ConversationHeader.Actions>
@@ -57,7 +57,7 @@ export const ChatRoom = React.memo(() => {
                     </ConversationHeader>
 
                     <MessageList typingIndicator={typingUsers.length > 0
-                        ? <TypingIndicator className="pl-1 ml-15" content={`${typingUsers.join(", ")} typing...`} />
+                        ? <TypingIndicator className="pl-1 ml-15" content={`${typingUsers.join(", ")} печатает...`} />
                         : null} >
 
                         <MessageList.Content className="pb-10">

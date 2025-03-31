@@ -10,6 +10,17 @@ import { User } from '@app/types/User';
 import ContextMenu from '@shared/components/ContextMenu';
 import '@shared/ui/styles/message-list.css'
 
+type ContextMenuState = {
+    x: number;
+    y: number;
+    items: ContextMenuItem[];
+} | null;
+
+type ContextMenuItem = {
+    label: string;
+    onClick: () => void;
+};
+
 type CustomMessageListProps = {
     currentUserId: string | null,
     currentChatId: string | null,
@@ -26,7 +37,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
     const originalMessageText = useRef<string>("");
 
     const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
-    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; items: any[] } | null>(null);
+    const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
 
     const { editMessage, deleteMessage } = useMessageStore();
 
@@ -83,7 +94,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
     if (!chats.length || !users.length || !currentChatId || !currentUserId) {
         return (
             <div className="flex items-center justify-center h-[92vh]">
-                <p className="text-center text-5xl text-[#636567]">Loading...</p>
+                <p className="text-center text-5xl text-[#636567]">Загрузка...</p>
             </div>
         );
     }
@@ -163,7 +174,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
 
                                 {msg.edited ? (
                                     <Message.Footer style={{ marginLeft: group.direction == 'outgoing' ? 'auto' : '' }}
-                                    >Edited</Message.Footer>
+                                    >Изменено</Message.Footer>
                                 ) : null}
                             </Message>
                         ))}
@@ -172,7 +183,7 @@ export const CustomMessageList: React.FC<CustomMessageListProps> = ({ currentCha
                 </MessageGroup>
             )) : <MessageList.Content>
                 <div className="flex items-center justify-center h-[92vh]">
-                    <p className="text-center text-4xl text-[#636567]">Write your first message in this chat room!</p>
+                    <p className="text-center text-4xl text-[#636567]">Напишите свое первое сообщение в этом чате!</p>
                 </div>
             </MessageList.Content>}
             <ContextMenu

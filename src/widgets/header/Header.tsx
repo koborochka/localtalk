@@ -23,15 +23,15 @@ export const Header: React.FC = () => {
             <div className='flex gap-5 md:gap-10'>
                 <Link to="/chat" className='flex gap-1 items-center cursor-pointer'>
                     <PiChatCircleDotsBold size={24} />
-                    <p className='text-xl hidden md:block'>Chat</p>
+                    <p className='text-xl hidden md:block'>Чат</p>
                 </Link>
                 <Link to="/profile" className='flex gap-1 items-center cursor-pointer'>
                     <CgProfile size={24} />
-                    <p className='text-xl hidden md:block'>Profile</p>
+                    <p className='text-xl hidden md:block'>Профиль</p>
                 </Link>
                 <div className='flex gap-1 items-center cursor-pointer' onClick={HandleLogout}>
                     <MdLogout size={24} />
-                    <p className='text-xl hidden md:block'>Logout</p>
+                    <p className='text-xl hidden md:block'>Выйти</p>
                 </div>
             </div>
             }
