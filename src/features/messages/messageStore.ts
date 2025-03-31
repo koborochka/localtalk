@@ -3,7 +3,7 @@ import { useChatStore } from "@shared/store/chatStore";
 import { create } from "zustand";
 
 const channel = new BroadcastChannel("chat_channel");
-type MessageStore = {
+type MessageStoreProps = {
 	sendMessage: (
 		chatId: string,
 		userId: string,
@@ -14,7 +14,7 @@ type MessageStore = {
 	deleteMessage: (chatId: string, messageId: string) => void;
 };
 
-export const useMessageStore = create<MessageStore>(() => {
+export const useMessageStore = create<MessageStoreProps>(() => {
 	return {
 		sendMessage: async (chatId, userId, text, media?) => {
 			const newMessage: Message = {

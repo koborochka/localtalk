@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { User } from "@app/types/User";
 import { db } from "@shared/lib/db/indexedDB";
 
-type UserStore = {
+type UserStoreProps = {
 	users: User[];
 	currentUserId: string | null;
 	setUser: (name: string) => void;
@@ -17,7 +17,7 @@ type UserStore = {
 
 const channel = new BroadcastChannel("user_channel"); 
 
-export const useUserStore = create<UserStore>((set, get) => {
+export const useUserStore = create<UserStoreProps>((set, get) => {
     const storedUserId = sessionStorage.getItem("currentUserId") || ""
     channel.onmessage = (event) => {
 		if (event.data.type === "UPDATE_USERS") {

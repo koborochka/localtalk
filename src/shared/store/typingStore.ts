@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type TypingStore = {
+type TypingStoreProps = {
 	typingUsers: Record<string, string[]>; // { chatId: ["User1", "User2"] }
 	setTyping: (chatId: string, userId: string, isTyping: boolean) => void;
 };
@@ -30,7 +30,7 @@ const updateTypingUsers = (
 	return updatedTypingUsers;
 };
 
-export const useTypingStore = create<TypingStore>((set) => {
+export const useTypingStore = create<TypingStoreProps>((set) => {
 	channel.onmessage = (event) => {
 		if (event.data.type === "TYPING_STATUS") {
 			const { chatId, userId, isTyping } = event.data;

@@ -5,7 +5,7 @@ import { db } from "@shared/lib/db/indexedDB";
 
 const channel = new BroadcastChannel("chat_channel");
 
-type ChatStore = {
+type ChatStoreProps = {
 	chats: Chat[];
 	currentChatId: string | null;
     isEnteringInChat: boolean;
@@ -14,7 +14,7 @@ type ChatStore = {
 	getChats: () => void;
 };
 
-export const useChatStore = create<ChatStore>((set, get) => {
+export const useChatStore = create<ChatStoreProps>((set, get) => {
 	const storedChatId = sessionStorage.getItem("currentChatId") || "";
 
 	channel.onmessage = async (event) => {
